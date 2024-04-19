@@ -1,0 +1,58 @@
+using System;
+
+public class RGB
+{
+    public int R_value { get; set; }
+    public int G_value { get; set; }
+    public int B_value { get; set; }
+
+    // Konstruktor
+    public RGB(int r, int g, int b)
+    {
+        R_value = r;
+        G_value = g;
+        B_value = b;
+    }
+}
+
+public class RGBController
+{
+    // Metoda inicjująca zestaw składowych barw dla danego obiektu
+    public void InitializeColor(RGB color, int r, int g, int b)
+    {
+        color.R_value = r;
+        color.G_value = g;
+        color.B_value = b;
+    }
+
+    // Metoda wyświetlająca składowe barw
+    public void DisplayColor(RGB color)
+    {
+        Console.WriteLine($"[{color.R_value}, {color.G_value}, {color.B_value}]");
+    }
+
+    // Metoda mieszająca kolory
+    public RGB MixColors(RGB color1, RGB color2)
+    {
+        int mixedR = (color1.R_value + color2.R_value) / 2;
+        int mixedG = (color1.G_value + color2.G_value) / 2;
+        int mixedB = (color1.B_value + color2.B_value) / 2;
+        return new RGB(mixedR, mixedG, mixedB);
+    }
+}
+
+class Program
+{
+    static void Main()
+    {
+        RGB color1 = new RGB(255, 0, 0); // Czerwony
+        RGB color2 = new RGB(0, 255, 0); // Zielony
+
+        RGBController controller = new RGBController();
+        controller.DisplayColor(color1); 
+        controller.DisplayColor(color2); 
+
+        RGB mixedColor = controller.MixColors(color1, color2); // Mieszanie czerwonego i zielonego
+        controller.DisplayColor(mixedColor); 
+    }
+}

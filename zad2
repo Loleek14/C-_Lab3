@@ -1,0 +1,253 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+
+class Student
+{
+    // Prywatne pola
+    private int nr_indeksu;
+    private string imie;
+    private string nazwisko;
+    private int rok_st;
+    private List<double> oceny;
+
+    // Konstruktor
+    public Student(int nr_indeksu, string imie, string nazwisko, int rok_st)
+    {
+        this.nr_indeksu = nr_indeksu;
+        this.imie = imie;
+        this.nazwisko = nazwisko;
+        this.rok_st = rok_st;
+        this.oceny = new List<double>();
+    }
+
+    // Gettery i Settery
+    public int NrIndeksu
+    {
+        get { return nr_indeksu; }
+        set { nr_indeksu = value; }
+    }
+
+    public string Imie
+    {
+        get { return imie; }
+        set { imie = value; }
+    }
+
+    public string Nazwisko
+    {
+        get { return nazwisko; }
+        set { nazwisko = value; }
+    }
+
+    public int RokSt
+    {
+        get { return rok_st; }
+        set { rok_st = value; }
+    }
+
+    public List<double> Oceny
+    {
+        get { return oceny; }
+    }
+
+    // Metoda wyświetlająca pola każdego studenta
+    public void WyswietlInfo()
+    {
+        Console.WriteLine($"Nr Indeksu: {nr_indeksu}, Imię: {imie}, Nazwisko: {nazwisko}, Rok Studiów: {rok_st}");
+        Console.WriteLine("Oceny: " + string.Join(", ", oceny));
+    }
+
+    // Dodawanie oceny
+    public void DodajOcene(double ocena)
+    {
+        oceny.Add(ocena);
+    }
+}
+
+class Uni
+{
+    // Pola
+    public List<double> ListaDopuszczalnychOcen { get; private set; }
+    public List<Student> ListaStudentów { get; private set; }
+
+    // Konstruktor
+    public Uni()
+    {
+        ListaDopuszczalnychOcen = new List<double> { 2, 3, 3.5, 4, 4.5, 5 };
+        ListaStudentów = new List<Student>();
+    }
+
+    // Metoda dodająca studenta
+    public void DodajStudenta()
+    {
+        try
+        {
+            Console.Write("Podaj nr indeksu: ");
+            int nrIndeksu = int.Parse(Console.ReadLine());
+            Console.Write("Podaj imię: ");
+            string imie = Console.ReadLine();
+            Console.Write("Podaj nazwisko: ");
+            string nazwisko = Console.ReadLine();
+            Console.Write("Podaj rok studiów: ");
+            int rokSt = int.Parse(Console.ReadLine());
+
+            Student nowyStudent = new Student(nrIndeksu, imie, nazwisko, rokSt);
+            ListaStudentów.Add(nowyStudent);
+
+            Console.WriteLine("Podaj oceny studenta. Wpisz 'koniec' aby zakończyć.");
+            while (true)
+            {
+                Console.Write("Podaj ocenę: ");
+                string input = Console.ReadLine();
+                if (input.ToLower() == "koniec")
+                {
+                    break;
+                }
+
+                if (double.TryParse(input, out double ocena) && ListaDopuszczalnychOcen.Contains(ocena))
+                {
+                    nowyStudent.DodajOcene(ocena);
+                }
+                else
+                {
+                    Console.WriteLine("Nieprawidłowa ocena. Spróbuj ponownie.");
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Wystąpił błąd: {ex.Message}");
+        }
+    }
+
+    // Metoda usuwająca studenta po nr_indeksu
+    public void UsunStudenta()
+    {
+        try
+        {
+            Console.Write("Podaj nr indeksu studenta do usunięcia: ");
+            int nrIndeksu = int.Parse(Console.ReadLine());
+            Student student = ListaStudentów.FirstOrDefault(s => s.NrIndeksu == nrIndeksu);
+
+            if (student != null)
+            {
+                ListaStudentów.Remove(student);
+                Console.WriteLine("Student został usunięty.");
+            }
+            else
+            {
+                Console.WriteLine("Student o podanym nr indeksu nie istnieje.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Wystąpił błąd: {ex.Message}");
+        }
+    }
+
+    // Metoda obliczająca średnią ocenę dla danego studenta
+    public void ObliczSrednia()
+    {
+        try
+        {
+            Console.Write("Podaj nr indeksu studenta: ");
+            int nrIndeksu = int.Parse(Console.ReadLine());
+            Student student = ListaStudentów.FirstOrDefault(s => s.NrIndeksu == nrIndeksu);
+
+            if (student != null)
+            {
+                if (student.Oceny.Count > 0)
+                {
+                    double srednia = student.Oceny.Average();
+                    Console.WriteLine($"Średnia ocen studenta {student.Imie} {student.Nazwisko} wynosi: {srednia:F2}");
+                }
+                else
+                {
+                    Console.WriteLine("Student nie ma jeszcze żadnych ocen.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Student o podanym nr indeksu nie istnieje.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Wystąpił błąd: {ex.Message}");
+        }
+    }
+
+    // Metoda obliczająca średnią arytmetyczną ocen wszystkich studentów
+    public void ObliczSredniaAll()
+    {
+        try
+        {
+            var wszystkieOceny = ListaStudentów.SelectMany(s => s.Oceny).ToList();
+
+            if (wszystkieOceny.Count > 0)
+            {
+                double srednia = wszystkieOceny.Average();
+                Console.WriteLine($"Średnia arytmetyczna ocen wszystkich studentów wynosi: {srednia:F2}");
+            }
+            else
+            {
+                Console.WriteLine("Nie ma jeszcze żadnych ocen.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Wystąpił błąd: {ex.Message}");
+        }
+    }
+}
+
+class Program
+{
+    static void Main(string[] args)
+    {
+        Uni uni = new Uni();
+        bool running = true;
+
+        while (running)
+        {
+            Console.WriteLine("Wybierz opcję:");
+            Console.WriteLine("1. Dodaj studenta");
+            Console.WriteLine("2. Usuń studenta");
+            Console.WriteLine("3. Oblicz średnią ocenę dla danego studenta");
+            Console.WriteLine("4. Oblicz średnią ocen wszystkich studentów");
+            Console.WriteLine("5. Wyświetl wszystkich studentów");
+            Console.WriteLine("6. Wyjście");
+
+            string choice = Console.ReadLine();
+
+            switch (choice)
+            {
+                case "1":
+                    uni.DodajStudenta();
+                    break;
+                case "2":
+                    uni.UsunStudenta();
+                    break;
+                case "3":
+                    uni.ObliczSrednia();
+                    break;
+                case "4":
+                    uni.ObliczSredniaAll();
+                    break;
+                case "5":
+                    foreach (var student in uni.ListaStudentów)
+                    {
+                        student.WyswietlInfo();
+                    }
+                    break;
+                case "6":
+                    running = false;
+                    break;
+                default:
+                    Console.WriteLine("Nieprawidłowy wybór. Spróbuj ponownie.");
+                    break;
+            }
+        }
+    }
+}
